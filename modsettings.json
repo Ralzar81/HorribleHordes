@@ -1,0 +1,28 @@
+{
+    "Version": "1.0",
+    "Sections":
+    [       
+        {
+            "Name": "Difficulty",
+            "Description": "Adjust the generation of hordes",
+            "IsAdvanced": false,
+            "Keys":
+            [            
+                {
+                    "Options": [
+                    "Easy Mode",
+                    "Normal",
+                    "Level Scaled",
+                    "Hard Mode"
+                    ],
+                    "Value": 1,
+                    "Name": "HordeAdjustment",
+                    "Description": "Change between nomral, level scaled and hard mode.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                }
+            ],
+            "$version": "v1"
+        }   
+    ]
+}

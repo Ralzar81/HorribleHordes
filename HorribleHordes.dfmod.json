@@ -1,0 +1,19 @@
+{
+    "ModTitle": "Horrible Hordes",
+    "ModVersion": "1.0.0",
+    "ModAuthor": "Ralzar",
+    "DFUnity_Version": "1.0.0",
+    "ModDescription": "Adds extra monsters in dungeons",
+    "GUID": "b5a72511-cf9c-491c-97f1-ef548cb73d23",
+    "Files": [
+        "Assets/Game/Mods/HorribleHordes/HorribleHordes.cs",
+        "Assets/Game/Mods/HorribleHordes/modsettings.json"
+    ],
+    "Dependencies": [
+        {
+            "Name": "daggerfall enemy expansion",
+            "IsOptional": true,
+            "IsPeer": false
+        }
+    ]
+}
