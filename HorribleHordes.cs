@@ -10,6 +10,7 @@ using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallWorkshop.Utility;
+using System.Collections.Generic;
 
 namespace HorribleHordesMod
 {
@@ -24,6 +25,7 @@ namespace HorribleHordesMod
         private static EnemyEntity enemyEntity;
         private static EnemySenses enemySenses;
         private static EnemyMotor enemyMotor;
+        private static List<Vector3> npcBillboardPos;
 
         [Invoke(StateManager.StateTypes.Start, 0)]
         public static void Init(InitParams initParams)
@@ -74,7 +76,19 @@ namespace HorribleHordesMod
                     hordeAdjust = - 10;
                     break;
             }
-                
+             
+            npcBillboardPos = new List<Vector3>();
+
+            Billboard[] billboards = (Billboard[])FindObjectsOfType(typeof(Billboard));
+            foreach (Billboard billb in billboards)
+            {
+                if (NPCbillCheck(billb.name))
+                {
+                    Debug.Log(billb.name + "added to npcBillboardPos");
+                    npcBillboardPos.Add(billb.transform.position);
+                }
+            }
+
             DaggerfallEntityBehaviour[] entityBehaviours = FindObjectsOfType<DaggerfallEntityBehaviour>();
             for (int i = 0; i < entityBehaviours.Length; i++)
             {
@@ -86,7 +100,7 @@ namespace HorribleHordesMod
                     enemyMotor = entityBehaviour.GetComponent<EnemyMotor>();
                     MobileTypes mobType = (MobileTypes)enemyEntity.MobileEnemy.ID;
                     int roll = UnityEngine.Random.Range(0, 20 - hordeAdjust);
-                    if (roll > 0)
+                    if (roll > 0 && !npcBillboardClose(entityBehaviour.transform.position))
                     {
                         switch ((int)mobType)
                         {
@@ -94,7 +108,7 @@ namespace HorribleHordesMod
                             case 3:
                             case 256:
                             case 260:
-                                AddVermin(mobType, roll/4);
+                                AddVermin(mobType, roll / 4);
                                 break;
                             case 12:
                             case 21:
@@ -107,6 +121,8 @@ namespace HorribleHordesMod
                                 break;
                         }
                     }
+                    else if (npcBillboardClose(entityBehaviour.transform.position))
+                        Debug.Log("npc close for " + enemyEntity.Name);
                     
                 }
             }
@@ -114,7 +130,6 @@ namespace HorribleHordesMod
 
         private static void AddVermin(MobileTypes mobType, int roll)
         {
-            Debug.Log("[Horrible Hordes]AddVermin roll = " + roll.ToString());
             roll -= (GameManager.Instance.PlayerEntity.Stats.LiveLuck / 10) - 5;
             roll = Mathf.Max(0, roll);
             Vector3 newEnemyPos = enemyMotor.transform.position + enemyMotor.transform.forward * 0.1f;
@@ -129,7 +144,6 @@ namespace HorribleHordesMod
 
         private static void AddOrcs(MobileTypes mobType, int roll)
         {
-            Debug.Log("[Horrible Hordes]AddOrcs roll = " + roll.ToString());
             roll -= (GameManager.Instance.PlayerEntity.Stats.LiveLuck / 10) - 5;
             roll = Mathf.Max(0, roll);
             if (mobType == MobileTypes.OrcWarlord)
@@ -173,7 +187,6 @@ namespace HorribleHordesMod
 
         private static void AddSkeletons(MobileTypes mobType, int roll)
         {
-            Debug.Log("[Horrible Hordes] AddSkeletons roll = " + roll.ToString());
             if (mobType == MobileTypes.AncientLich)
                 roll += UnityEngine.Random.Range(1, 5);
             roll -= (GameManager.Instance.PlayerEntity.Stats.LiveLuck / 10) - 5;
@@ -209,6 +222,48 @@ namespace HorribleHordesMod
                     mobiles[roll].SetActive(true);
                 }
             }
+        }
+
+        private static bool NPCbillCheck(string billName)
+        {
+            if (billName.StartsWith("DaggerfallBillboard [TEXTURE.175,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.176,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.177,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.178,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.179,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.180,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.181,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.182,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.183,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.184,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.185,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.186,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.195,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.197,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.334,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.346,") ||
+                billName.StartsWith("DaggerfallBillboard [TEXTURE.357,"))
+            {
+                Debug.Log(billName + "= true");
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        private static bool npcBillboardClose(Vector3 enemyPos)
+        {
+            bool close = false;
+            foreach (Vector3 billPos in npcBillboardPos)
+            {
+                if (Vector3.Distance(billPos, enemyPos) < 10)
+                    close = true;
+            }
+            
+            return close;
         }
     }
 }
